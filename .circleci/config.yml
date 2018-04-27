@@ -19,7 +19,7 @@ workflows:
             - "Summarize"
           filters:
             branches:
-              only: master
+              only: staging
       - "Deploy Production":
           requires:
             - "Summarize"
@@ -99,10 +99,6 @@ jobs:
   "Deploy Staging":
     <<: *defaults
     context: org-global
-    filters:
-      branches:
-        only:
-          - staging
     environment:
       HEROKU_APP_NAME: circle-ci2
     steps:
@@ -124,10 +120,6 @@ jobs:
   "Deploy Production":
     <<: *defaults
     context: org-global
-    filters:
-      branches:
-        only:
-          - production
     environment:
       HEROKU_APP_NAME: circle-ci2-prod
     steps:
