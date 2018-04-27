@@ -113,6 +113,8 @@ jobs:
                   machine git.heroku.com
                     login $HEROKU_LOGIN
                     password $HEROKU_API_KEY' > ~/.netrc
+            echo 'VerifyHostKeyDNS yes
+                  StrictHostKeyChecking no' ~/.ssh/config
       - run:
           command: |
             git push git@heroku.com:circle-ci2.git $CIRCLE_SHA1:master
@@ -134,6 +136,8 @@ jobs:
                   machine git.heroku.com
                     login $HEROKU_LOGIN
                     password $HEROKU_API_KEY' > ~/.netrc
+            echo 'VerifyHostKeyDNS yes
+                  StrictHostKeyChecking no' ~/.ssh/config
       - run:
           command: |
             git push git@heroku.com:circle-ci2-prod.git $CIRCLE_SHA1:master
