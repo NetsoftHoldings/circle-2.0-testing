@@ -30,7 +30,7 @@ workflows:
 defaults: &defaults
   docker: &ruby_image
     - &ruby_image
-      image: circleci/ruby:2.4-jessie
+      image: netsoftholdings/hubstaff-core:ruby2.2.5-node6.14.1-jessie
       environment:
         BUNDLE_PATH: vendor/bundle
         BUNDLE_VERSION: 1.16.1
@@ -98,6 +98,11 @@ jobs:
 
   "Deploy Staging":
     <<: *defaults
+    context: org-global
+    filters:
+      branches:
+        only:
+          - staging
     environment:
       HEROKU_APP_NAME: circle-ci2
     steps:
@@ -105,14 +110,24 @@ jobs:
           at: .
       - run:
           name: Setup Heroku
-          command: bash .circleci/setup-heroku.sh
+          command:  |
+            echo 'machine api.heroku.com
+                    login $HEROKU_LOGIN
+                    password $HEROKU_API_KEY
+                  machine git.heroku.com
+                    login $HEROKU_LOGIN
+                    password $HEROKU_API_KEY' > ~/.netrc
       - run:
           command: |
-            git push -f heroku HEAD:refs/heads/master
-            sleep 5 # sleep for 5 seconds to wait for dynos
-            heroku restart
+            git push git@heroku.com:circle-ci2.git $CIRCLE_SHA1:master
+            heroku run rake circle
   "Deploy Production":
     <<: *defaults
+    context: org-global
+    filters:
+      branches:
+        only:
+          - production
     environment:
       HEROKU_APP_NAME: circle-ci2-prod
     steps:
@@ -120,9 +135,15 @@ jobs:
           at: .
       - run:
           name: Setup Heroku
-          command: bash .circleci/setup-heroku.sh
+          command:  |
+            echo 'machine api.heroku.com
+                    login $HEROKU_LOGIN
+                    password $HEROKU_API_KEY
+                  machine git.heroku.com
+                    login $HEROKU_LOGIN
+                    password $HEROKU_API_KEY' > ~/.netrc
       - run:
           command: |
-            git push -f heroku HEAD:refs/heads/master
-            sleep 5 # sleep for 5 seconds to wait for dynos
-            heroku restart
+            git push git@heroku.com:circle-ci2-prod.git $CIRCLE_SHA1:master
+            heroku run rake circle
+            git push git@heroku.com:circle-ci2-prod2.git $CIRCLE_SHA1:master
