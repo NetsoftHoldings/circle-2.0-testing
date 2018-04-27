@@ -57,7 +57,7 @@ jobs:
           at: .
       - restore_cache:
           keys:
-            -bundle-v1-{{ checksum "Gemfile.lock" }}
+            - bundle-v1-{{ checksum "Gemfile.lock" }}
       - run:
           name: Install bundler
           command: gem install bundler --version=$BUNDLE_VERSION
